@@ -22,6 +22,7 @@ class LandsProcessor {
     this.processSrcSet();
     this.processBackgroundImages();
     this.processHead();
+    this.processBody();
     this.organizeAssets();
     this.saveHtml();
   }
@@ -118,6 +119,18 @@ class LandsProcessor {
     }
 
     console.log('The functions have been successfully added to the head section.');
+  }
+
+  processBody() {
+    const { document } = this.#dom.window;
+    const body = document.querySelector('body');
+
+    if (body) {
+      const newBodyContent = `{% set user_country = geoip('user_country')|lower %}{% set locale = user_country ? 'locale-' ~ user_country : 'locale-undecided' %}<body class="{{ locale }}">${body.innerHTML}</body>`;
+      body.outerHTML = newBodyContent;
+    }
+
+    console.log('The body tag has been successfully updated.');
   }
 
   organizeAssets() {

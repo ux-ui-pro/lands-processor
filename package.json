@@ -1,6 +1,6 @@
 {
   "name": "lands-processor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": "ux-ui.pro",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "build": "yarn clean && parcel build"
   },
   "dependencies": {
-    "jsdom": "^24.0.0"
+    "jsdom": "^24.1.0"
   },
   "keywords": []
 }
