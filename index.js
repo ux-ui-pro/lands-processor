@@ -126,18 +126,12 @@ class LandsProcessor {
     const body = document.querySelector('body');
 
     if (body) {
-      const newBodyContent = `{% set user_country = geoip('user_country')|lower %}{% set locale = user_country ? 'locale-' ~ user_country : 'locale-undecided' %}<body class="{{ locale }}">${body.innerHTML}</body>`;
-      const newBodyElement = document.createElement('div');
-      newBodyElement.innerHTML = newBodyContent;
+      body.insertAdjacentHTML('beforebegin', `{% set user_country = geoip('user_country')|lower %}{% set locale = user_country ? 'locale-' ~ user_country : 'locale-undecided' %}`);
 
-      const newBody = newBodyElement.firstChild;
-
-      body.parentNode.replaceChild(newBody, body);
-    } else {
-      console.error('Body tag not found in the document.');
+      body.className += '{{ locale }}';
     }
 
-    console.log('The body tag has been successfully updated.');
+    console.log('The Twig markup has been successfully added to the body section.');
   }
 
   organizeAssets() {
