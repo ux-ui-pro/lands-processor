@@ -127,7 +127,9 @@ class LandsProcessor {
 
     if (body) {
       const newBodyContent = `{% set user_country = geoip('user_country')|lower %}{% set locale = user_country ? 'locale-' ~ user_country : 'locale-undecided' %}<body class="{{ locale }}">${body.innerHTML}</body>`;
-      body.outerHTML = newBodyContent;
+      const newBodyElement = document.createElement('div');
+      newBodyElement.innerHTML = newBodyContent;
+      document.replaceChild(newBodyElement.firstChild, body);
     }
 
     console.log('The body tag has been successfully updated.');
