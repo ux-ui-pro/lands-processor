@@ -129,7 +129,12 @@ class LandsProcessor {
       const newBodyContent = `{% set user_country = geoip('user_country')|lower %}{% set locale = user_country ? 'locale-' ~ user_country : 'locale-undecided' %}<body class="{{ locale }}">${body.innerHTML}</body>`;
       const newBodyElement = document.createElement('div');
       newBodyElement.innerHTML = newBodyContent;
-      document.replaceChild(newBodyElement.firstChild, body);
+
+      const newBody = newBodyElement.firstChild;
+
+      body.parentNode.replaceChild(newBody, body);
+    } else {
+      console.error('Body tag not found in the document.');
     }
 
     console.log('The body tag has been successfully updated.');
