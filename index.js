@@ -23,9 +23,12 @@ class LandsProcessor {
     await this.processBackgroundImages();
     await this.processHead();
     await this.processGeo();
+    await this.processGtm();
     await this.organizeAssets();
     await this.processCssFiles();
     await this.saveHtml();
+    await this.organizeMainTwig();
+    await this.deleteIndexHtml();
   }
 
   async loadHtml() {
@@ -139,6 +142,17 @@ class LandsProcessor {
     console.log('The Twig markup has been successfully added to the body section and the html lang attribute has been updated.');
   }
 
+  async processGtm() {
+    const { document } = this.#dom.window;
+    const body = document.querySelector('body');
+
+    if (body) {
+      body.insertAdjacentHTML('beforeend', '{{ getJsCodeGTM() }}');
+    }
+
+    console.log('The GTM code has been successfully added before the closing </body> tag.');
+  }
+
   async processCssFiles() {
     const cssDir = path.join('dist', 'css');
     const imageExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif'];
@@ -207,6 +221,26 @@ class LandsProcessor {
     }
 
     console.log('Assets were successfully organised and relocated.');
+  }
+
+  async organizeMainTwig() {
+    const layoutsDir = path.join('dist', 'layouts');
+
+    await fs.mkdir(layoutsDir, { recursive: true });
+    await fs.rename('dist/main.twig', path.join(layoutsDir, 'main.twig'));
+
+    console.log('The main.twig file has been successfully moved to the layouts directory.');
+  }
+
+  async deleteIndexHtml() {
+    const indexPath = path.join('dist', 'index.html');
+
+    try {
+      await fs.unlink(indexPath);
+      console.log('The index.html file has been successfully deleted.');
+    } catch (err) {
+      console.log('The index.html file does not exist or could not be deleted.');
+    }
   }
 }
 

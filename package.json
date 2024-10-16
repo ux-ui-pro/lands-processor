@@ -1,6 +1,6 @@
 {
   "name": "lands-processor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "author": "ux-ui.pro",
   "license": "MIT",
@@ -12,12 +12,8 @@
     "url": "https://github.com/ux-ui-pro/lands-processor/issues"
   },
   "main": "index.js",
-  "scripts": {
-    "clean": "rm -rf dist .parcel-cache",
-    "build": "yarn clean && parcel build"
-  },
   "dependencies": {
-    "jsdom": "^24.1.0"
+    "jsdom": "^25.0.1"
   },
   "keywords": []
 }
