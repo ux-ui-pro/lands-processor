@@ -23,7 +23,7 @@ class LandsProcessor {
     await this.processBackgroundImages();
     await this.processHead();
     await this.processGeo();
-    await this.processGtm();
+    // await this.processGtm();
     await this.organizeAssets();
     await this.processCssFiles();
     await this.saveHtml();
@@ -142,16 +142,21 @@ class LandsProcessor {
     console.log('The Twig markup has been successfully added to the body section and the html lang attribute has been updated.');
   }
 
-  async processGtm() {
-    const { document } = this.#dom.window;
-    const body = document.querySelector('body');
-
-    if (body) {
-      body.insertAdjacentHTML('beforeend', '{{ getJsCodeGTM() }}');
-    }
-
-    console.log('The GTM code has been successfully added before the closing </body> tag.');
-  }
+  // async processGtm() {
+  //   const { document } = this.#dom.window;
+  //   const head = document.querySelector('head');
+  //   const body = document.querySelector('body');
+  //
+  //   if (head) {
+  //     head.insertAdjacentHTML('beforeend', '{{ getGtmHeadCode() }}');
+  //   }
+  //
+  //   if (body) {
+  //     body.insertAdjacentHTML('afterbegin', '{{ getGtmBodyCode() }}');
+  //   }
+  //
+  //   console.log('The GTM head and body codes have been successfully added.');
+  // }
 
   async processCssFiles() {
     const cssDir = path.join('dist', 'css');
