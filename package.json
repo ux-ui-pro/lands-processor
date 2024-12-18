@@ -1,6 +1,6 @@
 {
   "name": "lands-processor",
-  "version": "1.5.0",
+  "version": "1.7.0",
   "description": "",
   "author": "ux-ui.pro",
   "license": "MIT",
@@ -13,7 +13,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "jsdom": "^25.0.1"
+    "jsdom": "25.0.1"
   },
   "keywords": []
 }

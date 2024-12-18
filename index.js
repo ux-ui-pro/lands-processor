@@ -26,10 +26,10 @@ class LandsProcessor {
     await this.organizeAssets();
     await this.processCssFiles();
     await this.addGtmIncludes();
-    // await this.addSignupFormManager();
     await this.saveHtml();
     await this.organizeMainTwig();
     await this.deleteIndexHtml();
+    await this.deleteAssetsDirectory();
   }
 
   async loadHtml() {
@@ -161,23 +161,34 @@ class LandsProcessor {
       images: ['jpg', 'jpeg', 'avif', 'webp', 'png', 'svg'],
       js: ['js', 'js.map'],
     };
+
+    const directories = ['dist', 'dist/assets'];
+
     for (const type of Object.keys(assetTypes)) {
       const dirPath = path.join('dist', type);
       await fs.mkdir(dirPath, { recursive: true });
     }
-    const files = await fs.readdir('dist');
-    for (const file of files) {
-      const filePath = path.join('dist', file);
-      if ((await fs.stat(filePath)).isFile()) {
-        const ext = file.split('.').pop();
-        const fullExt = file.endsWith('.map') ? file.split('.').slice(-2).join('.') : ext;
-        if (assetTypes.css.includes(fullExt)) {
-          await fs.rename(filePath, path.join('dist/css', file));
-        } else if (assetTypes.images.includes(ext)) {
-          await fs.rename(filePath, path.join('dist/images', file));
-        } else if (assetTypes.js.includes(fullExt)) {
-          await fs.rename(filePath, path.join('dist/js', file));
+
+    for (const baseDir of directories) {
+      try {
+        const files = await fs.readdir(baseDir);
+        for (const file of files) {
+          const filePath = path.join(baseDir, file);
+          if ((await fs.stat(filePath)).isFile()) {
+            const ext = file.split('.').pop();
+            const fullExt = file.endsWith('.map') ? file.split('.').slice(-2).join('.') : ext;
+
+            if (assetTypes.css.includes(fullExt)) {
+              await fs.rename(filePath, path.join('dist/css', file));
+            } else if (assetTypes.images.includes(ext)) {
+              await fs.rename(filePath, path.join('dist/images', file));
+            } else if (assetTypes.js.includes(fullExt)) {
+              await fs.rename(filePath, path.join('dist/js', file));
+            }
+          }
         }
+      } catch (err) {
+        console.log(`Directory does not exist or could not be read: ${baseDir}`);
       }
     }
     console.log('Assets were successfully organized and relocated.');
@@ -200,6 +211,20 @@ class LandsProcessor {
     }
   }
 
+  async deleteAssetsDirectory() {
+    const assetsPath = path.join('dist', 'assets');
+    try {
+      await fs.rmdir(assetsPath, { recursive: true });
+      console.log('The assets directory has been successfully deleted.');
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        console.log('The assets directory does not exist.');
+      } else {
+        console.error('An error occurred while deleting the assets directory:', err);
+      }
+    }
+  }
+
   async addGtmIncludes() {
     const { document } = this.#dom.window;
     const head = document.querySelector('head');
@@ -212,15 +237,6 @@ class LandsProcessor {
     }
     console.log('GTM includes have been added to head and body.');
   }
-
-  // async addSignupFormManager() {
-  //   const { document } = this.#dom.window;
-  //   const body = document.querySelector('body');
-  //   if (body) {
-  //     body.insertAdjacentHTML('beforeend', `{% include '../../common/templates/signup/form-manager.twig' ignore missing %}`);
-  //   }
-  //   console.log('Signup form manager include has been added to the body.');
-  // }
 }
 
 if (require.main === module) {
