@@ -31,6 +31,32 @@ class HtmlProcessor {
         });
     }
 
+    processSvgImages() {
+        const { document } = this.dom.window;
+        document
+            .querySelectorAll('image[href], image[xlink\\:href]')
+            .forEach((svgImg) => {
+                const href =
+                    svgImg.getAttribute('href') ||
+                    svgImg.getAttribute('xlink:href');
+                if (!href) return;
+
+                if (/^(https?:)?\/\//i.test(href) || href.startsWith('data:')) {
+                    return;
+                }
+
+                const fileName = href.replace(/^\.\//, '').split('/').pop();
+                const newPath = `{{ landing.asset('images/${fileName}') }}`;
+
+                if (svgImg.hasAttribute('href')) {
+                    svgImg.setAttribute('href', newPath);
+                }
+                if (svgImg.hasAttribute('xlink:href')) {
+                    svgImg.setAttribute('xlink:href', newPath);
+                }
+            });
+    }
+
     processSrcSet() {
         const { document } = this.dom.window;
         document.querySelectorAll('[srcset]').forEach((element) => {
@@ -49,23 +75,33 @@ class HtmlProcessor {
 
     processBackgroundImages() {
         const { document } = this.dom.window;
-        document.querySelectorAll('[style*="background-image"]').forEach((element) => {
-            let styleContent = element.getAttribute('style');
-            styleContent = styleContent.replace(/url\((['"]?)([^'")]+)\1\)/g, (_match, _quote, url) => {
-                const fileName = url.split('/').pop();
-                return `url({{ landing.asset('images/${fileName}') }})`;
+        document
+            .querySelectorAll('[style*="background-image"]')
+            .forEach((element) => {
+                let styleContent = element.getAttribute('style');
+                styleContent = styleContent.replace(
+                    /url\((['"]?)([^'")]+)\1\)/g,
+                    (_match, _quote, url) => {
+                        const fileName = url.split('/').pop();
+                        return `url({{ landing.asset('images/${fileName}') }})`;
+                    }
+                );
+                element.setAttribute('style', styleContent);
             });
-            element.setAttribute('style', styleContent);
-        });
     }
 
     processPreloadImages() {
         const { document } = this.dom.window;
-        document.querySelectorAll('link[rel="preload"][as="image"][href]').forEach((link) => {
-            const filePath = link.getAttribute('href');
-            const fileName = path.basename(filePath);
-            link.setAttribute('href', `{{ landing.asset('images/${fileName}') }}`);
-        });
+        document
+            .querySelectorAll('link[rel="preload"][as="image"][href]')
+            .forEach((link) => {
+                const filePath = link.getAttribute('href');
+                const fileName = path.basename(filePath);
+                link.setAttribute(
+                    'href',
+                    `{{ landing.asset('images/${fileName}') }}`
+                );
+            });
         console.log('Preload image links have been successfully processed.');
     }
 
@@ -74,12 +110,18 @@ class HtmlProcessor {
 
         document.querySelectorAll('video[src]').forEach((video) => {
             const fileName = video.getAttribute('src').split('/').pop();
-            video.setAttribute('src', `{{ landing.asset('videos/${fileName}') }}`);
+            video.setAttribute(
+                'src',
+                `{{ landing.asset('videos/${fileName}') }}`
+            );
         });
 
         document.querySelectorAll('video source[src]').forEach((source) => {
             const fileName = source.getAttribute('src').split('/').pop();
-            source.setAttribute('src', `{{ landing.asset('videos/${fileName}') }}`);
+            source.setAttribute(
+                'src',
+                `{{ landing.asset('videos/${fileName}') }}`
+            );
         });
 
         console.log('Processed video elements.');
@@ -90,12 +132,18 @@ class HtmlProcessor {
 
         document.querySelectorAll('audio[src]').forEach((audio) => {
             const fileName = audio.getAttribute('src').split('/').pop();
-            audio.setAttribute('src', `{{ landing.asset('audios/${fileName}') }}`);
+            audio.setAttribute(
+                'src',
+                `{{ landing.asset('audios/${fileName}') }}`
+            );
         });
 
         document.querySelectorAll('audio source[src]').forEach((source) => {
             const fileName = source.getAttribute('src').split('/').pop();
-            source.setAttribute('src', `{{ landing.asset('audios/${fileName}') }}`);
+            source.setAttribute(
+                'src',
+                `{{ landing.asset('audios/${fileName}') }}`
+            );
         });
 
         console.log('Processed audio elements.');
@@ -103,11 +151,16 @@ class HtmlProcessor {
 
     processFavicons() {
         const { document } = this.dom.window;
-        document.querySelectorAll('link[rel*="icon"][href]').forEach((link) => {
-            const filePath = link.getAttribute('href');
-            const fileName = filePath.split('/').pop();
-            link.setAttribute('href', `{{ landing.asset('images/${fileName}') }}`);
-        });
+        document
+            .querySelectorAll('link[rel*="icon"][href]')
+            .forEach((link) => {
+                const filePath = link.getAttribute('href');
+                const fileName = filePath.split('/').pop();
+                link.setAttribute(
+                    'href',
+                    `{{ landing.asset('images/${fileName}') }}`
+                );
+            });
         console.log('Favicon links have been successfully processed.');
     }
 
@@ -115,7 +168,8 @@ class HtmlProcessor {
         const { document } = this.dom.window;
         const title = document.querySelector('title');
         if (title) {
-            title.textContent = '{{ landing.yieldArea(\'title\', [\'blocks/title\']) }}';
+            title.textContent =
+                "{{ landing.yieldArea('title', ['blocks/title']) }}";
         }
 
         const head = document.querySelector('head');

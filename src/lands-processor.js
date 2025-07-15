@@ -2,9 +2,9 @@ const fs = require('fs').promises;
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-const HtmlProcessor = require('./html-processor');
-const AssetsManager = require('./assets-manager');
-const TwigGenerator = require('./twig-generator');
+const HtmlProcessor   = require('./html-processor');
+const AssetsManager   = require('./assets-manager');
+const TwigGenerator   = require('./twig-generator');
 
 class LandsProcessor {
     #htmlFilePath;
@@ -13,9 +13,9 @@ class LandsProcessor {
 
     constructor(htmlFilePath) {
         this.#htmlFilePath = htmlFilePath;
-        this.#dom = null;
+        this.#dom          = null;
 
-        const distDir = path.dirname(htmlFilePath);
+        const distDir     = path.dirname(htmlFilePath);
         const projectName = path.basename(path.resolve(distDir, '..'));
 
         this.#projectDistDir = path.join('dist', projectName);
@@ -24,13 +24,14 @@ class LandsProcessor {
     async process() {
         await this.loadHtml();
 
-        const htmlProcessor = new HtmlProcessor(this.#dom);
-        const assetsManager = new AssetsManager(this.#projectDistDir);
-        const twigGenerator = new TwigGenerator(this.#dom, this.#projectDistDir);
+        const htmlProcessor  = new HtmlProcessor(this.#dom);
+        const assetsManager  = new AssetsManager(this.#projectDistDir);
+        const twigGenerator  = new TwigGenerator(this.#dom, this.#projectDistDir);
 
         htmlProcessor.processLinks();
         htmlProcessor.processScripts();
         htmlProcessor.processImages();
+        htmlProcessor.processSvgImages();
         htmlProcessor.processSrcSet();
         htmlProcessor.processBackgroundImages();
         htmlProcessor.processPreloadImages();
@@ -57,7 +58,7 @@ class LandsProcessor {
 
     async loadHtml() {
         const html = await fs.readFile(this.#htmlFilePath, 'utf8');
-        this.#dom = new JSDOM(html);
+        this.#dom  = new JSDOM(html);
     }
 }
 
